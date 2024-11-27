@@ -169,6 +169,27 @@
                 padding: 1.5rem;
             }
         }
+
+        /* 기존 CSS에 추가 */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            padding: 0.3rem 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .logout-btn:hover {
+            background-color: #e9ecef;
+        }
     </style>
 </head>
 <body>
@@ -196,8 +217,70 @@
     </main>
 
     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
         import phraseGenerator from '/utils/phrase-generator.js';
-    
+
+        // Firebase 구성 객체
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmqhLo8FRpDYFyQmxqPCp_I7jr-CKU8VU",
+            authDomain: "snsn-24b20.firebaseapp.com",
+            projectId: "snsn-24b20",
+            storageBucket: "snsn-24b20.firebasestorage.app",
+            messagingSenderId: "223356698668",
+            appId: "1:223356698668:web:91dc7d20179f66406c5189",
+            measurementId: "G-RH60R4CJME"
+        };
+
+        // Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+
+        // 인증 상태 관찰자 설정
+        onAuthStateChanged(auth, async (user) => {
+            const loginBox = document.querySelector('.login-box');
+            
+            if (user) {
+                // 사용자가 로그인한 상태
+                console.log('로그인된 사용자:', user.email);
+                
+                // Firestore에서 사용자 정보 가져오기
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                const userData = userDoc.data();
+                
+                // 로그인 버튼을 사용자 정보와 로그아웃 버튼으로 변경
+                loginBox.innerHTML = `
+                    <div class="user-info">
+                        ${userData.name} (${userData.school})
+                        <button onclick="handleLogout()" class="logout-btn">로그아웃</button>
+                    </div>
+                `;
+                
+                // 시작하기 버튼에 직접 링크 설정
+                document.querySelector('.start-button').href = './subject.html';
+            } else {
+                // 로그인하지 않은 상태
+                loginBox.innerHTML = `<a href="./login.html">로그인</a>`;
+                
+                // 시작하기 버튼 클릭 시 로그인 페이지로 이동
+                document.querySelector('.start-button').href = './login.html';
+            }
+        });
+
+        // 로그아웃 함수
+        window.handleLogout = async () => {
+            try {
+                await signOut(auth);
+                window.location.href = './login.html';
+            } catch (error) {
+                console.error('로그아웃 에러:', error);
+                alert('로그아웃 중 오류가 발생했습니다.');
+            }
+        };
+
         async function initializeHandwritingPhrase() {
             console.log('Initializing...'); // 초기화 시작 확인
             await phraseGenerator.loadPhrases();
@@ -222,10 +305,8 @@
                 phraseBox.textContent = "사람은 나이로 늙는 것이 아니라 기분으로 늙는다";
             }
         }
-    
-        // 페이지 로드 시 초기화
+
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM Content Loaded'); // DOM 로드 확인
             initializeHandwritingPhrase();
         });
     </script>
