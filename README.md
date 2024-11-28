@@ -110,7 +110,7 @@ MIT License
 - 이슈 등록: [GitHub Issues]https://github.com/Dwawawawa/Dwawawawa.github.io.git
 
 ## 개발자 정보
-- 장효제
+- Name: 장효제 (Hyoje Jang)
 - Email: wkdgywp@gmail.com
 - GitHub: https://github.com/Dwawawawa
 
