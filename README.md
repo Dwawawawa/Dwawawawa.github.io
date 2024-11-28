@@ -22,7 +22,7 @@
 ## 설치 방법
 1. 저장소 클론
 ```bash
-git clone https://github.com/[your-username]/SNSN.git
+git clone https://github.com/Dwawawawa/Dwawawawa.github.io.git
 cd SNSN
 ```
 
@@ -107,12 +107,12 @@ git push origin main
 MIT License
 
 ## 문의사항
-- 이슈 등록: [GitHub Issues](https://github.com/[your-username]/SNSN/issues)
+- 이슈 등록: [GitHub Issues]https://github.com/Dwawawawa/Dwawawawa.github.io.git
 
 ## 개발자 정보
-- [Your Name]
-- Email: [your-email]
-- GitHub: [@your-username]
+- 장효제
+- Email: wkdgywp@gmail.com
+- GitHub: https://github.com/Dwawawawa
 
 ---
 ⭐️ 이 프로젝트가 도움이 되었다면 스타를 눌러주세요!
