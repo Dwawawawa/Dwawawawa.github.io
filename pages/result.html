@@ -365,22 +365,38 @@
         }
     
     
-        async function loadMemo(userId) {
-            const memoContainer = document.getElementById('memo');
-            if (!memoContainer) return;
-    
+        async function loadMemo() {
             try {
+                const user = auth.currentUser;
+                if (!user) {
+                    console.log('No user logged in');
+                    return;
+                }
+
                 const questionId = sessionStorage.getItem('questionSetId');
-                const memoDoc = await getDoc(doc(db, `users/${userId}/memos/${questionId}`));
+                if (!questionId) {
+                    console.log('No question ID found');
+                    return;
+                }
+
+                const memoDoc = await getDoc(doc(db, `users/${user.uid}/memos/${questionId}`));
+                const memoContainer = document.getElementById('memo');
                 
-                if (memoDoc.exists()) {
-                    memoContainer.textContent = memoDoc.data().content;
-                } else {
-                    memoContainer.textContent = '작성된 메모가 없습니다.';
+                if (memoContainer) {
+                    if (memoDoc.exists()) {
+                        console.log('Memo found:', memoDoc.data());
+                        memoContainer.textContent = memoDoc.data().content;
+                    } else {
+                        console.log('No memo found');
+                        memoContainer.textContent = '작성된 메모가 없습니다.';
+                    }
                 }
             } catch (error) {
                 console.error('Failed to load memo:', error);
-                memoContainer.textContent = '메모를 불러오는데 실패했습니다.';
+                const memoContainer = document.getElementById('memo');
+                if (memoContainer) {
+                    memoContainer.textContent = '메모를 불러오는데 실패했습니다.';
+                }
             }
         }
         
