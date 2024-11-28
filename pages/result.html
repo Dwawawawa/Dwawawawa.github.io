@@ -330,14 +330,16 @@
                     }
                 ).length;
                 
-                // 정답률 업데이트
+                console.log(`Correct answers: ${correctAnswers}, Total questions: ${totalQuestions}`); // 디버깅용
+
+                // 정답률 업데이트 (첫 번째 summary-value)
                 const accuracyElement = document.querySelector('.summary-value');
                 if (accuracyElement) {
                     accuracyElement.textContent = `${Math.round(correctAnswers / totalQuestions * 100)}%`;
                 }
                 
-                // 정답 개수 업데이트
-                const scoreElement = document.querySelectorAll('.summary-value')[2];
+                // 정답 개수 업데이트 (두 번째 summary-value)
+                const scoreElement = document.querySelector('.summary-grid .summary-item:nth-child(2) .summary-value');
                 if (scoreElement) {
                     scoreElement.textContent = `${correctAnswers}/${totalQuestions}`;
                 }
@@ -345,7 +347,7 @@
                 console.error('Error updating statistics:', error);
             }
         }
-    
+
         async function getLatestSubmission(userId) {
             try {
                 const submissionsRef = collection(db, `users/${userId}/submissions`);
