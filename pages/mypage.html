@@ -278,21 +278,194 @@
         </div>
     </div>
 
-    <script>
-        // 스트릭 캘린더 생성
-        function createStreakCalendar() {
-            const grid = document.querySelector('.calendar-grid');
-            const today = new Date();
-            const streakData = getStreakData(); // API에서 데이터 가져오기
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+     
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmqhLo8FRpDYFyQmxqPCp_I7jr-CKU8VU",
+            authDomain: "snsn-24b20.firebaseapp.com",
+            projectId: "snsn-24b20",
+            storageBucket: "snsn-24b20.firebasestorage.app",
+            messagingSenderId: "223356698668",
+            appId: "1:223356698668:web:91dc7d20179f66406c5189",
+            measurementId: "G-RH60R4CJME"
+        };
+     
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+     
+        async function initializeMyPage(user) {
+            try {
+                console.log('Initializing page for user:', user.uid);
+                // 사용자 정보 로드
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                const userData = userDoc.data();
+                console.log('User data:', userData);
+                
+                // 프로필 정보 업데이트
+                updateProfileInfo(userData);
+                
+                // 최근 30일간의 학습 데이터 로드
+                await loadUserLearningData(user.uid);
 
+                // 로그아웃 버튼 설정 추가
+                setupLogoutButton();
+
+            } catch (error) {
+                console.error("Failed to initialize page:", error);
+                alert('데이터를 불러오는데 실패했습니다.');
+            }
+        }
+     
+        async function loadUserLearningData(userId) {
+            try {
+                const submissionsRef = collection(db, `users/${userId}/submissions`);
+                const querySnapshot = await getDocs(submissionsRef);
+
+                let stats = {
+                    totalQuestions: 0,
+                    correctAnswers: 0,
+                    totalTimeSpent: 0,
+                    studyDays: new Set(),
+                    consecutiveDays: 0,
+                    recentActivities: []
+                };
+
+                // Promise.all을 사용하여 모든 제출 데이터 처리
+                await Promise.all(
+                    querySnapshot.docs.map(doc => processSubmissionData(doc.data(), stats))
+                );
+
+                console.log('Final stats:', stats);
+                updateStatisticsDisplay(stats);
+                updateCalendarGrid(stats.studyDays);
+                updateActivityList(stats.recentActivities);
+
+            } catch (error) {
+                console.error('Error loading learning data:', error);
+                alert('학습 데이터를 불러오는데 실패했습니다.');
+            }
+        }
+
+        async function loadQuestionData(subject, setId) {
+            try {
+                const response = await fetch(`../data/question-${subject}.json`);
+                const data = await response.json();
+                // questionSets에서 해당 세트의 questions와 correctAnswer를 찾음
+                const questionSet = data.questionSets[subject].find(set => set.id === setId);
+                return questionSet ? questionSet.questions : null;
+            } catch (error) {
+                console.error('Error loading question data:', error);
+                return null;
+            }
+        }
+     
+        async function processSubmissionData(data, stats) {
+            console.log('Processing submission:', data);
+
+            const submitDate = new Date(data.submittedAt).toDateString();
+            stats.studyDays.add(submitDate);
+
+            if (data.answers && data.questionSetId && data.subject) {
+                // 해당 문제 세트의 정답 데이터 로드
+                const questionData = await loadQuestionData(data.subject, data.questionSetId);
+                
+                if (questionData) {
+                    // 점수 계산
+                    const { score, correctCount, total } = calculateScore(data.answers, questionData);
+                    
+                    stats.totalQuestions += total;
+                    stats.correctAnswers += correctCount;
+
+                    // 최근 활동에 추가
+                    stats.recentActivities.push({
+                        subject: data.subject,
+                        date: new Date(data.submittedAt).toLocaleDateString(),
+                        score: score
+                    });
+                }
+            }
+
+            if (data.timeSpent) {
+                stats.totalTimeSpent += data.timeSpent;
+            }
+        }
+        function calculateConsecutiveStudyDays(studyDays) {
+            const today = new Date();
+            let consecutiveDays = 0;
+            let checkDate = new Date(today);
+     
+            while (true) {
+                const dateString = checkDate.toDateString();
+                if (studyDays.has(dateString)) {
+                    consecutiveDays++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+     
+            return consecutiveDays;
+        }
+     
+        function updateProfileInfo(userData) {
+            document.querySelector('.profile-name').textContent = userData.name || '사용자';
+            document.querySelector('.profile-school').textContent = 
+                `${userData.school || '학교'} ${userData.grade ? userData.grade + '학년' : ''}`;
+        }
+     
+        // 통계 표시 함수 수정
+        function updateStatisticsDisplay(stats) {
+            console.log('Displaying stats:', stats); // 표시할 통계 확인용 로그
+
+            try {
+                // 연속 학습일
+                const consecutiveDays = calculateConsecutiveStudyDays(stats.studyDays);
+                document.querySelector('.stat-card:nth-child(1) .stat-value').textContent = 
+                    consecutiveDays.toString();
+                document.querySelector('.streak-calendar p').textContent = 
+                    `현재 ${consecutiveDays}일 연속 학습 중!`;
+
+                // 정답률
+                const accuracy = stats.totalQuestions > 0 
+                    ? Math.round((stats.correctAnswers / stats.totalQuestions) * 100) 
+                    : 0;
+                document.querySelector('.stat-card:nth-child(2) .stat-value').textContent = 
+                    `${accuracy}%`;
+
+                // 총 학습 시간 (분 단위)
+                document.querySelector('.stat-card:nth-child(3) .stat-value').textContent = 
+                    Math.floor(stats.totalTimeSpent / 60).toString();
+
+                // 푼 문제 수
+                document.querySelector('.stat-card:nth-child(4) .stat-value').textContent = 
+                    stats.totalQuestions.toString();
+
+                // 최근 활동 목록
+                updateActivityList(stats.recentActivities);
+
+            } catch (error) {
+                console.error('Error updating display:', error);
+            }
+        }
+     
+        function updateCalendarGrid(studyDays) {
+            const grid = document.querySelector('.calendar-grid');
+            grid.innerHTML = '';
+            
+            const today = new Date();
             for (let i = 27; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                
                 const day = document.createElement('div');
                 day.className = 'calendar-day';
-                
-                if (streakData[i]) {
+                if (studyDays.has(date.toDateString())) {
                     day.classList.add('active');
                 }
-                
                 if (i === 0) {
                     day.classList.add('today');
                 }
@@ -300,43 +473,73 @@
                 grid.appendChild(day);
             }
         }
+     
+        function updateActivityList(activities) {
+            console.log('Updating activity list:', activities); // 활동 목록 확인용 로그
 
-        // 최근 활동 목록 생성
-        function createActivityList() {
             const activityList = document.querySelector('.activity-list');
-            const activities = getRecentActivities(); // API에서 데이터 가져오기
-
-            activityList.innerHTML = activities.map(activity => `
-                <div class="activity-item">
-                    <div class="activity-info">
-                        <div class="activity-subject">${activity.subject}</div>
-                        <div class="activity-date">${activity.date}</div>
+            if (activityList && activities.length > 0) {
+                activityList.innerHTML = activities.map(activity => `
+                    <div class="activity-item">
+                        <div class="activity-info">
+                            <div class="activity-subject">${activity.subject}</div>
+                            <div class="activity-date">${activity.date}</div>
+                        </div>
+                        <div class="activity-score">${activity.score}점</div>
                     </div>
-                    <div class="activity-score">${activity.score}점</div>
-                </div>
-            `).join('');
+                `).join('');
+            } else {
+                activityList.innerHTML = '<div class="no-activity">아직 학습 기록이 없습니다.</div>';
+            }
+        }
+     
+        function calculateScore(userAnswers, questionData) {
+            if (!userAnswers || !questionData) return { score: 0, correctCount: 0, total: 0 };
+
+            let correctCount = 0;
+            const total = Object.keys(userAnswers).length;
+
+            Object.entries(userAnswers).forEach(([questionNum, userAnswer]) => {
+                // questionNum은 1부터 시작하므로 배열 인덱스로 변환
+                const index = parseInt(questionNum) - 1;
+                if (questionData[index] && userAnswer === questionData[index].correctAnswer) {
+                    correctCount++;
+                }
+            });
+
+            const score = Math.round((correctCount / total) * 100);
+            
+            console.log(`Score calculation: ${correctCount} correct out of ${total}, score: ${score}`);
+            
+            return {
+                score,
+                correctCount,
+                total
+            };
         }
 
-        // 임시 데이터 생성 함수
-        function getStreakData() {
-            return Array(28).fill().map(() => Math.random() > 0.3);
+        function setupLogoutButton() {
+            const logoutButton = document.querySelector('a[href="mypage.html"]');
+            logoutButton.addEventListener('click', async (e) => {
+                e.preventDefault();
+                try {
+                    await signOut(auth);
+                    window.location.href = 'login.html';
+                } catch (error) {
+                    console.error("Logout failed:", error);
+                    alert('로그아웃에 실패했습니다.');
+                }
+            });
         }
-
-        function getRecentActivities() {
-            return [
-                { subject: '독서 - 과학 지문', date: '2024.03.11', score: 90 },
-                { subject: '문학 - 현대시', date: '2024.03.11', score: 85 },
-                { subject: '화법과 작문 - 화법', date: '2024.03.10', score: 95 },
-                { subject: '독서 - 인문 지문', date: '2024.03.10', score: 80 },
-                { subject: '언어와 매체 - 매체', date: '2024.03.09', score: 88 }
-            ];
-        }
-
-        // 페이지 로드 시 초기화
-        document.addEventListener('DOMContentLoaded', () => {
-            createStreakCalendar();
-            createActivityList();
+     
+        // 인증 상태 관찰자
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                initializeMyPage(user);
+            } else {
+                window.location.href = 'login.html';
+            }
         });
-    </script>
+     </script>
 </body>
 </html>

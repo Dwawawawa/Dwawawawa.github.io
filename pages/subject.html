@@ -117,29 +117,61 @@
     <nav class="nav-container">
         <a href="landing.html" class="nav-button">수능순웅</a>
         <a href="mypage.html" class="nav-button">내 정보</a>
+        <span id="userInfo" class="nav-user"></span> <!-- 사용자 정보 표시 -->
     </nav>
 
     <main class="main-content">
         <div class="subject-container">
             <div class="subject-grid">
-                <button onclick="loadQuestions('reading')" class="subject-button">독서</button>
-                <button onclick="loadQuestions('literature')" class="subject-button">문학</button>
-                <button onclick="loadQuestions('grammar')" class="subject-button">화법과 작문</button>
-                <button onclick="loadQuestions('language')" class="subject-button">언어와 매체</button>
+                <button class="subject-button" data-subject="reading">독서</button>
+                <button class="subject-button" data-subject="literature">문학</button>
+                <button class="subject-button" data-subject="grammar">화법과 작문</button>
+                <button class="subject-button" data-subject="language">언어와 매체</button>
             </div>
         </div>
     </main>
     
-    <script>
-    function loadQuestions(subject) {
-        // sessionStorage 잘 되고 있냐?
-        console.log('Selected subject:', subject);
-        // 선택한 과목을 세션 스토리지에 저장
-        sessionStorage.setItem('selectedSubject', subject);
-        
-        // question.html로 이동
-        window.location.href = 'question.html';
-    }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmqhLo8FRpDYFyQmxqPCp_I7jr-CKU8VU",
+            authDomain: "snsn-24b20.firebaseapp.com",
+            projectId: "snsn-24b20",
+            storageBucket: "snsn-24b20.firebasestorage.app",
+            messagingSenderId: "223356698668",
+            appId: "1:223356698668:web:91dc7d20179f66406c5189",
+            measurementId: "G-RH60R4CJME"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // 버튼 이벤트 리스너 설정
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.subject-button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const subject = this.getAttribute('data-subject');
+                    loadQuestions(subject);
+                });
+            });
+        });
+
+        function loadQuestions(subject) {
+            console.log('Selecting subject:', subject);
+            sessionStorage.setItem('selectedSubject', subject);
+            window.location.href = 'question.html';
+        }
+
+        // 인증 상태 확인
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                console.log('No user logged in, redirecting...');
+                window.location.href = 'login.html';
+            }
+        });
     </script>
 </body>
 </html>

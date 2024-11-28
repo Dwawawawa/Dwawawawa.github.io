@@ -379,87 +379,34 @@
             </div>
         </div>
     </div>
-    <script>
-        // 전역 변수 선언
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import QuestionLoader from '../utils/questionLoader.js';
+        import MemoManager from '../utils/memoManager.js';
+     
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmqhLo8FRpDYFyQmxqPCp_I7jr-CKU8VU",
+            authDomain: "snsn-24b20.firebaseapp.com",
+            projectId: "snsn-24b20",
+            storageBucket: "snsn-24b20.firebasestorage.app",
+            messagingSenderId: "223356698668",
+            appId: "1:223356698668:web:91dc7d20179f66406c5189",
+            measurementId: "G-RH60R4CJME"
+        };
+     
+        // Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+     
         let currentQuestionSet = null;
         let selectedAnswers = new Map();
         let timer = null;
-        
-        window.submitAnswers = function() {
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('submitPopup').style.display = 'block';
-        }
-    
-        window.closePopup = function() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('submitPopup').style.display = 'none';
-        }
-    
-        window.selectAnswer = function(questionNumber, optionId) {
-            selectedAnswers.set(questionNumber, optionId);
-            
-            const options = document.querySelectorAll(`.question:nth-child(${questionNumber}) .option-item`);
-            options.forEach(option => option.classList.remove('selected'));
-            document.querySelector(`.question:nth-child(${questionNumber}) .option-item:nth-child(${optionId})`).classList.add('selected');
-        }
-    
-        window.confirmSubmit = async function() {
-            try {
-                // 답안 제출 처리
-                localStorage.setItem('submittedAnswers', JSON.stringify(Array.from(selectedAnswers.entries())));
-                window.location.href = 'result.html';
-            } catch (error) {
-                console.error('Failed to submit answers:', error);
-            }
-        }        
-
-        // 나머지 코드는 type="module" 스크립트에서 계속 사용
-    </script>
-
-    <script type="module">
-        import QuestionLoader from '../utils/questionLoader.js';
-        import MemoManager from '../utils/memoManager.js';
-
-        // let currentQuestionSet = null;
-        // let selectedAnswers = new Map();
-        // let timer = null;
-
-        // question.html의 스크립트 부분
-        async function initializePage() {
-            const subject = sessionStorage.getItem('selectedSubject');
-            if (!subject) {
-                window.location.href = 'subjects.html';
-                return;
-            }
-
-            try {
-                console.log('Loading questions for subject:', subject);
-                currentQuestionSet = await QuestionLoader.loadQuestionsBySubject(subject);
-                console.log('Processed question set:', currentQuestionSet);
-
-                if (!currentQuestionSet) {
-                    throw new Error('Failed to load question data');
-                }
-
-                // 지문 렌더링
-                renderPassage(currentQuestionSet.passage);
-                
-                // 문제 렌더링
-                renderQuestions(currentQuestionSet.questionSet);
-                
-                // 타이머 시작
-                startTimer(currentQuestionSet.metadata.timeExpected);
-
-                // 메모 매니저 초기화
-                MemoManager.initialize();
-
-                
-            } catch (error) {
-                console.error('Initialization error:', error);
-                alert('문제 데이터를 불러오는데 실패했습니다.');
-            }
-        }
-
+     
+        // 지문 렌더링 함수
         function renderPassage(passage) {
             const passageElement = document.getElementById('passage');
             if (passage && passage.content) {
@@ -472,14 +419,15 @@
                 console.error('Invalid passage data:', passage);
             }
         }
-
+     
+        // 문제 렌더링 함수
         function renderQuestions(questions) {
             const questionsContainer = document.getElementById('questions');
             if (!Array.isArray(questions)) {
                 console.error('Questions is not an array:', questions);
                 return;
             }
-
+     
             console.log('Rendering questions:', questions);
             questionsContainer.innerHTML = questions.map((question, index) => `
                 <div class="question">
@@ -499,76 +447,136 @@
                 </div>
             `).join('');
         }
-
+     
         function startTimer(seconds) {
             const timerElement = document.querySelector('.timer');
             let remainingTime = seconds;
-
+     
             timer = setInterval(() => {
                 remainingTime--;
                 if (remainingTime <= 0) {
                     clearInterval(timer);
                     submitAnswers();
                 }
-
+     
                 const minutes = Math.floor(remainingTime / 60);
                 const secs = remainingTime % 60;
                 timerElement.textContent = `${minutes}:${secs.toString().padStart(2, '0')}`;
             }, 1000);
         }
-
+     
+        async function initializePage(user) {
+            try {
+                console.log('Initialize page with user:', user.email);
+                
+                const subject = sessionStorage.getItem('selectedSubject');
+                console.log('Selected subject:', subject);
+                
+                currentQuestionSet = await QuestionLoader.loadQuestionsBySubject(subject);
+                console.log('Loaded question set:', currentQuestionSet);
+     
+                renderPassage(currentQuestionSet.passage);
+                renderQuestions(currentQuestionSet.questionSet);
+                
+                const timeExpected = currentQuestionSet.metadata?.timeExpected || 180;
+                startTimer(timeExpected);
+     
+                MemoManager.initialize();
+            } catch (error) {
+                console.error('Initialization error:', error);
+                alert('문제 데이터를 불러오는데 실패했습니다.');
+            }
+        }
+     
         function selectAnswer(questionNumber, optionId) {
             selectedAnswers.set(questionNumber, optionId);
             
-            // 선택된 답안 시각적 표시
             const options = document.querySelectorAll(`.question:nth-child(${questionNumber}) .option-item`);
             options.forEach(option => option.classList.remove('selected'));
             document.querySelector(`.question:nth-child(${questionNumber}) .option-item:nth-child(${optionId})`).classList.add('selected');
         }
-        
+     
         function submitAnswers() {
             document.getElementById('overlay').style.display = 'block';
             document.getElementById('submitPopup').style.display = 'block';
         }
-
+     
         function closePopup() {
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('submitPopup').style.display = 'none';
         }
-
+     
         async function confirmSubmit() {
-            // 답안 제출 처리
+            const user = auth.currentUser;
+            if (!user) {
+                alert('로그인이 필요합니다.');
+                window.location.href = 'login.html';
+                return;
+            }
+
             try {
-                await QuestionLoader.saveAnswer(
-                    'userId', // 실제 구현시 사용자 ID 필요
-                    currentQuestionSet.id,
-                    selectedAnswers
-                );
-            // URL 수정: .html 확장자 추가 및 쿼리스트링 제거
-            window.location.href = 'result.html';
+                // currentQuestionSet이 제대로 로드되었는지 확인
+                if (!currentQuestionSet || !currentQuestionSet.metadata) {
+                    throw new Error('문제 데이터가 올바르게 로드되지 않았습니다.');
+                }
+
+                clearInterval(timer);
+
+                // 현재 시간(분)을 계산
+                const currentTime = document.querySelector('.timer').textContent;
+                const [minutes, seconds] = currentTime.split(':').map(Number);
+                const timeSpent = currentQuestionSet.metadata.timeExpected - (minutes * 60 + seconds);
+
+                // submissionData 객체 생성 전 데이터 검증
+                const submissionData = {
+                    userId: user.uid,
+                    questionSetId: currentQuestionSet.id || 'default', // fallback 값 제공
+                    subject: sessionStorage.getItem('selectedSubject'),
+                    answers: Object.fromEntries(selectedAnswers),
+                    submittedAt: new Date().toISOString(),
+                    timeSpent: timeSpent
+                };
+
+                // 데이터 유효성 검사
+                console.log('Submitting data:', submissionData);
+                
+                // Firestore에 데이터 저장
+                const submissionRef = doc(db, `users/${user.uid}/submissions/${Date.now()}`);
+                await setDoc(submissionRef, submissionData);
+
+                // 세션 스토리지에 답안 저장
+                sessionStorage.setItem('submittedAnswers', JSON.stringify(Array.from(selectedAnswers.entries())));
+                sessionStorage.setItem('questionSetId', currentQuestionSet.id);
+                
+                // 결과 페이지로 이동
+                window.location.href = 'result.html';
             } catch (error) {
-                console.error('Failed to submit answers:', error);
+                console.error('답안 제출 중 오류:', error);
+                alert(`답안 제출에 실패했습니다: ${error.message}`);
             }
         }
-
-        // 페이지 로드 시 초기화
-        document.addEventListener('DOMContentLoaded', initializePage);
-
+     
+        // 인증 상태 관찰자
+        onAuthStateChanged(auth, (user) => {
+            console.log('Auth state changed:', user ? 'logged in' : 'logged out');
+            if (user) {
+                initializePage(user);
+            } else {
+                console.log('Redirecting to login page...');
+                window.location.href = 'login.html';
+            }
+        });
+     
         // 전역 함수로 노출
         window.selectAnswer = selectAnswer;
-        
         window.submitAnswers = submitAnswers;
         window.closePopup = closePopup;
         window.confirmSubmit = confirmSubmit;
-        // MemoManager 인스턴스를 전역으로 사용할 수 있게 설정
         window.memoManager = MemoManager;
         window.toggleMemo = () => MemoManager.toggleMemo();
         window.saveMemo = () => MemoManager.saveMemo();
         window.clearMemo = () => MemoManager.clearMemo();
         window.autoSaveMemo = () => memoManager.autoSaveMemo();
-
-        // 페이지 로드 시 초기화
-        document.addEventListener('DOMContentLoaded', initializePage);
-    </script>
+     </script>
 </body>
 </html>
