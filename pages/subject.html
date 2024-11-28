@@ -152,12 +152,17 @@
         document.addEventListener('DOMContentLoaded', () => {
             const buttons = document.querySelectorAll('.subject-button');
             buttons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const subject = this.getAttribute('data-subject');
-                    loadQuestions(subject);
+                button.addEventListener('click', (e) => {
+                    const subject = e.target.dataset.subject;
+                    if (subject === 'reading') {
+                        sessionStorage.setItem('selectedSubject', subject);
+                        window.location.href = 'question.html';
+                    } else {
+                        alert("죄송합니다. 데이터를 모으지 못했습니다.");
+                    }
                 });
             });
-        });
+         });
 
         function loadQuestions(subject) {
             console.log('Selecting subject:', subject);
