@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee_Gum Wiki</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="wiki-header">
+        <div class="header-content">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <span class="hamburger"></span>
+                <span class="hamburger"></span>
+                <span class="hamburger"></span>
+            </button>
+            <div class="header-title">
+                <h1>☕ Coffee_Gum</h1>
+                <p class="subtitle">지식 습득과 기술 연습의 공간</p>
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="문서 검색...">
+                <button class="search-btn">🔍</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="wiki-container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <ul class="nav-menu">
+                    <li class="nav-item active" data-page="home">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">🏠</span>
+                            <span class="nav-text">홈</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-page="read">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">📚</span>
+                            <span class="nav-text">Read</span>
+                        </a>
+                        <ul class="sub-menu">
+                            <li class="sub-item" data-page="recent-materials">
+                                <a href="#" class="sub-link">최근 자료</a>
+                            </li>
+                            <li class="sub-item" data-page="tech-docs">
+                                <a href="#" class="sub-link">기술 문서</a>
+                            </li>
+                            <li class="sub-item" data-page="academic-papers">
+                                <a href="#" class="sub-link">학술 논문</a>
+                            </li>
+                            <li class="sub-item" data-page="industry-trends">
+                                <a href="#" class="sub-link">업계 동향</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item" data-page="describe">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">✍️</span>
+                            <span class="nav-text">Describe</span>
+                        </a>
+                        <ul class="sub-menu">
+                            <li class="sub-item" data-page="tech-analysis">
+                                <a href="#" class="sub-link">기술 분석</a>
+                            </li>
+                            <li class="sub-item" data-page="research-reports">
+                                <a href="#" class="sub-link">연구 보고서</a>
+                            </li>
+                            <li class="sub-item" data-page="project-reviews">
+                                <a href="#" class="sub-link">프로젝트 리뷰</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item" data-page="repository">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">📂</span>
+                            <span class="nav-text">Repository</span>
+                        </a>
+                        <ul class="sub-menu">
+                            <li class="sub-item" data-page="hj-folder">
+                                <a href="#" class="sub-link">HJ 폴더</a>
+                            </li>
+                            <li class="sub-item" data-page="shared-materials">
+                                <a href="#" class="sub-link">공유 자료</a>
+                            </li>
+                            <li class="sub-item" data-page="templates">
+                                <a href="#" class="sub-link">템플릿</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item" data-page="about">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">ℹ️</span>
+                            <span class="nav-text">About</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Table of Contents -->
+            <div class="toc-container" id="tocContainer">
+                <div class="toc-header">
+                    <h3>목차</h3>
+                    <button class="toc-toggle" id="tocToggle">−</button>
+                </div>
+                <div class="toc-content" id="tocContent">
+                    <!-- TOC will be generated dynamically -->
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="page-content" id="pageContent">
+                <!-- Home Page -->
+                <div class="page active" id="home-page">
+                    <div class="page-header">
+                        <h1>Coffee_Gum 위키에 오신 것을 환영합니다</h1>
+                        <div class="page-meta">
+                            <span class="last-updated">최종 수정: 2024년 6월 8일</span>
+                            <span class="edit-link">편집</span>
+                        </div>
+                    </div>
+
+                    <div class="page-body">
+                        <div class="intro-section">
+                            <p class="lead">Coffee_Gum은 주기적인 지식 습득 및 의식적 기술 연습을 주 활동으로 하는 집단입니다.</p>
+                        </div>
+
+                        <h2 id="main-activities">주요 활동</h2>
+                        <div class="activity-grid">
+                            <div class="activity-card">
+                                <h3>📚 Read</h3>
+                                <p>주 2-3개의 자료를 Repository에 업로드</p>
+                                <p>과목에 상관없이, 알던 내용이던 새로운 내용이던 상관없이 진행합니다.</p>
+                            </div>
+                            <div class="activity-card">
+                                <h3>✍️ Describe</h3>
+                                <p>주기적으로 조사한 내용을 학술적 언어로 기술</p>
+                                <p>자기가 조사한 것 중 하나를 골라서 분야에 맞는 학술적 언어로 기술하는 활동입니다.</p>
+                            </div>
+                        </div>
+
+                        <h2 id="goals">목표</h2>
+                        <ol class="goals-list">
+                            <li><strong>정보 탐색 능력 향상</strong> - 다양한 분야의 정보를 효율적으로 찾고 분석하는 능력을 기릅니다.</li>
+                            <li><strong>지식 함양을 통한 기술 능력 향상</strong> - 지속적인 학습을 통해 실무 능력을 향상시킵니다.</li>
+                            <li><strong>N명이 주기적으로 쌓는 공유 데이터베이스 구축</strong> - 구성원들이 함께 만들어가는 지식 저장소를 구축합니다.</li>
+                        </ol>
+
+                        <h2 id="recent-updates">최근 업데이트</h2>
+                        <div class="recent-updates">
+                            <div class="update-item">
+                                <div class="update-meta">
+                                    <span class="update-date">2024-06-08</span>
+                                    <span class="update-category read">Read</span>
+                                </div>
+                                <h4><a href="#" onclick="navigateToPage('read')">웹 개발 기초 가이드</a></h4>
+                                <p class="update-author">작성자: 효제</p>
+                            </div>
+                            <div class="update-item">
+                                <div class="update-meta">
+                                    <span class="update-date">2024-06-07</span>
+                                    <span class="update-category describe">Describe</span>
+                                </div>
+                                <h4><a href="#" onclick="navigateToPage('describe')">모던 웹 프레임워크 분석</a></h4>
+                                <p class="update-author">작성자: 효제</p>
+                            </div>
+                            <div class="update-item">
+                                <div class="update-meta">
+                                    <span class="update-date">2024-06-06</span>
+                                    <span class="update-category read">Read</span>
+                                </div>
+                                <h4><a href="#" onclick="navigateToPage('read')">JavaScript 최신 동향</a></h4>
+                                <p class="update-author">작성자: 효제</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Read Page -->
+                <div class="page" id="read-page">
+                    <div class="page-header">
+                        <h1>Read 활동</h1>
+                        <div class="page-meta">
+                            <span class="last-updated">최종 수정: 2024년 6월 8일</span>
+                            <span class="edit-link">편집</span>
+                        </div>
+                    </div>
+                    <div class="page-body">
+                        <p class="lead">과목에 상관없이, 알던 내용이던 새로운 내용이던 상관없이 주 2-3개의 자료를 Repository에 업로드하는 방식으로 진행합니다.</p>
+                        
+                        <h2 id="read-guidelines">Read 활동 가이드라인</h2>
+                        <ul>
+                            <li>주당 2-3개의 자료를 선정하여 업로드</li>
+                            <li>분야나 난이도에 제한 없음</li>
+                            <li>개인적 관심사와 학습 목표를 고려하여 선택</li>
+                            <li>자료의 출처와 간단한 요약 첨부</li>
+                        </ul>
+
+                        <h2 id="recent-materials">최근 업로드된 자료</h2>
+                        <div class="material-list">
+                            <div class="material-item">
+                                <h4>웹 개발 기초 가이드</h4>
+                                <p class="material-meta">업로드: 2024.06.08 | 분류: 웹 개발</p>
+                                <p>HTML, CSS, JavaScript의 기본 개념과 실습 예제를 포함한 입문자용 가이드</p>
+                            </div>
+                            <div class="material-item">
+                                <h4>JavaScript 최신 동향</h4>
+                                <p class="material-meta">업로드: 2024.06.07 | 분류: 프로그래밍</p>
+                                <p>ES2024의 새로운 기능과 현재 개발 트렌드에 대한 분석 자료</p>
+                            </div>
+                            <div class="material-item">
+                                <h4>데이터베이스 설계 패턴</h4>
+                                <p class="material-meta">업로드: 2024.06.06 | 분류: 데이터베이스</p>
+                                <p>효율적인 데이터베이스 설계를 위한 패턴과 베스트 프랙티스</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Describe Page -->
+                <div class="page" id="describe-page">
+                    <div class="page-header">
+                        <h1>Describe 활동</h1>
+                        <div class="page-meta">
+                            <span class="last-updated">최종 수정: 2024년 6월 7일</span>
+                            <span class="edit-link">편집</span>
+                        </div>
+                    </div>
+                    <div class="page-body">
+                        <p class="lead">주기적인 날짜에 자기가 조사한 것 중 하나를 골라서 분야에 맞는 학술적 언어로 기술하는 활동입니다.</p>
+                        
+                        <h2 id="describe-purpose">Describe 활동의 목적</h2>
+                        <ul>
+                            <li>학습한 내용을 체계적으로 정리하고 문서화</li>
+                            <li>학술적 글쓰기 능력 향상</li>
+                            <li>지식의 구조화와 논리적 사고 훈련</li>
+                            <li>다른 구성원들과의 지식 공유</li>
+                        </ul>
+
+                        <h2 id="recent-descriptions">최근 기술 문서</h2>
+                        <div class="description-list">
+                            <div class="description-item">
+                                <h4>모던 웹 프레임워크 분석 보고서</h4>
+                                <p class="description-meta">작성일: 2024.06.07 | 분야: 웹 개발</p>
+                                <p>React, Vue, Angular의 특징과 성능을 비교 분석한 학술적 보고서</p>
+                                <div class="description-tags">
+                                    <span class="tag">프레임워크</span>
+                                    <span class="tag">성능분석</span>
+                                    <span class="tag">비교연구</span>
+                                </div>
+                            </div>
+                            <div class="description-item">
+                                <h4>클라우드 아키텍처 설계 방법론</h4>
+                                <p class="description-meta">작성일: 2024.06.05 | 분야: 시스템 아키텍처</p>
+                                <p>마이크로서비스 기반 클라우드 아키텍처의 설계 원칙과 구현 전략</p>
+                                <div class="description-tags">
+                                    <span class="tag">클라우드</span>
+                                    <span class="tag">마이크로서비스</span>
+                                    <span class="tag">아키텍처</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Repository Page -->
+                <div class="page" id="repository-page">
+                    <div class="page-header">
+                        <h1>Repository</h1>
+                        <div class="page-meta">
+                            <span class="last-updated">최종 수정: 2024년 6월 8일</span>
+                            <span class="edit-link">편집</span>
+                        </div>
+                    </div>
+                    <div class="page-body">
+                        <p class="lead">Coffee_Gum의 모든 자료와 문서들이 체계적으로 관리되는 저장소입니다.</p>
+                        
+                        <h2 id="repository-structure">Repository 구조</h2>
+                        <div class="repo-structure">
+                            <div class="folder-item">
+                                <h4>📁 HJ 폴더</h4>
+                                <p>효제의 개인 학습 자료 및 프로젝트 파일들이 저장되는 공간</p>
+                                <ul>
+                                    <li>📄 웹 개발 기초 가이드.md</li>
+                                    <li>📄 JavaScript 최신 동향.pdf</li>
+                                    <li>📄 데이터베이스 설계 패턴.docx</li>
+                                    <li>📁 프로젝트 아카이브/</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="folder-item">
+                                <h4>📁 공유 자료</h4>
+                                <p>모든 구성원이 공유하는 일반적인 학습 자료 및 참고 문서</p>
+                                <ul>
+                                    <li>📄 코딩 컨벤션 가이드.md</li>
+                                    <li>📄 추천 학습 자료 목록.md</li>
+                                    <li>📄 유용한 개발 도구 모음.md</li>
+                                    <li>📁 공통 라이브러리/</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="folder-item">
+                                <h4>📁 템플릿</h4>
+                                <p>문서 작성 및 프로젝트 시작을 위한 표준 템플릿 모음</p>
+                                <ul>
+                                    <li>📄 Read 활동 보고서 템플릿.md</li>
+                                    <li>📄 Describe 문서 템플릿.md</li>
+                                    <li>📄 프로젝트 README 템플릿.md</li>
+                                    <li>📄 회의록 템플릿.md</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <h2 id="upload-guidelines">업로드 가이드라인</h2>
+                        <div class="guidelines">
+                            <h4>파일 명명 규칙</h4>
+                            <ul>
+                                <li>날짜_카테고리_제목.확장자 형식 사용</li>
+                                <li>예: 2024-06-08_Read_웹개발기초가이드.md</li>
+                                <li>특수문자 및 공백 사용 지양</li>
+                            </ul>
+                            
+                            <h4>폴더 구조</h4>
+                            <ul>
+                                <li>개인 폴더는 이름 이니셜로 생성</li>
+                                <li>카테고리별 하위 폴더 구성</li>
+                                <li>최대 3단계 깊이까지 권장</li>
+                            </ul>
+                            
+                            <h4>파일 형식</h4>
+                            <ul>
+                                <li>문서: Markdown (.md) 권장</li>
+                                <li>코드: 해당 언어의 표준 확장자</li>
+                                <li>이미지: PNG, JPG, SVG</li>
+                                <li>압축파일: ZIP, 7Z</li>
+                            </ul>
+                        </div>
+
+                        <h2 id="recent-commits">최근 업데이트</h2>
+                        <div class="commit-list">
+                            <div class="commit-item">
+                                <div class="commit-meta">
+                                    <span class="commit-hash">#a7b8c9d</span>
+                                    <span class="commit-date">2024-06-08 14:30</span>
+                                    <span class="commit-author">효제</span>
+                                </div>
+                                <h4>웹 개발 기초 가이드 추가</h4>
+                                <p>HJ/Read/ 폴더에 웹 개발 입문자를 위한 기초 가이드 문서 추가</p>
+                            </div>
+                            
+                            <div class="commit-item">
+                                <div class="commit-meta">
+                                    <span class="commit-hash">#f3e4d5c</span>
+                                    <span class="commit-date">2024-06-07 16:45</span>
+                                    <span class="commit-author">효제</span>
+                                </div>
+                                <h4>템플릿 폴더 구조 개선</h4>
+                                <p>문서 작성을 위한 표준 템플릿들을 체계적으로 정리</p>
+                            </div>
+                            
+                            <div class="commit-item">
+                                <div class="commit-meta">
+                                    <span class="commit-hash">#b2c3d4e</span>
+                                    <span class="commit-date">2024-06-06 09:15</span>
+                                    <span class="commit-author">효제</span>
+                                </div>
+                                <h4>JavaScript 최신 동향 분석 자료 업로드</h4>
+                                <p>ES2024 신기능과 개발 트렌드에 대한 분석 문서 추가</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Page -->
+                <div class="page" id="about-page">
+                    <div class="page-header">
+                        <h1>About Coffee_Gum</h1>
+                        <div class="page-meta">
+                            <span class="last-updated">최종 수정: 2024년 6월 1일</span>
+                            <span class="edit-link">편집</span>
+                        </div>
+                    </div>
+                    <div class="page-body">
+                        <h2 id="about-mission">미션</h2>
+                        <p>Coffee_Gum은 지속적인 학습과 지식 공유를 통해 개인과 집단의 성장을 추구하는 학습 공동체입니다.</p>
+                        
+                        <h2 id="about-values">핵심 가치</h2>
+                        <ul>
+                            <li><strong>지속성</strong>: 꾸준한 학습과 기록을 통한 점진적 성장</li>
+                            <li><strong>공유</strong>: 개인의 학습이 공동체의 자산이 되는 선순환 구조</li>
+                            <li><strong>다양성</strong>: 다양한 분야와 관점을 존중하는 포용적 학습 환경</li>
+                            <li><strong>실용성</strong>: 이론과 실무를 연결하는 실질적 학습 추구</li>
+                        </ul>
+
+                        <h2 id="about-activities">활동 상세</h2>
+                        <div class="activity-details">
+                            <h4>Read 활동</h4>
+                            <p>매주 2-3개의 학습 자료를 Repository에 업로드하며, 분야나 수준에 제한을 두지 않습니다. 개인의 관심사와 학습 목표에 따라 자유롭게 선택할 수 있습니다.</p>
+                            
+                            <h4>Describe 활동</h4>
+                            <p>정기적으로 학습한 내용 중 하나를 선택하여 해당 분야의 학술적 언어로 문서화합니다. 이를 통해 깊이 있는 이해와 논리적 사고력을 기릅니다.</p>
+                        </div>
+
+                        <h2 id="about-contact">연락처 및 링크</h2>
+                        <div class="contact-info">
+                            <p><strong>GitHub Repository:</strong> <a href="https://github.com/earltrash/Coffee_Gum" target="_blank">Coffee_Gum</a></p>
+                            <p><strong>Website:</strong> <a href="https://github.com/Dwawawawa/Dwawawawa.github.io" target="_blank">Dwawawawa.github.io</a></p>
+                            <p><strong>설립:</strong> 2024년</p>
+                            <p><strong>구성원:</strong> 학습에 열정을 가진 개발자들</p>
+                        </div>
+
+                        <h2 id="about-roadmap">향후 계획</h2>
+                        <ul>
+                            <li>구성원 확대 및 다양한 분야의 전문가 영입</li>
+                            <li>온라인 스터디 세션 정기 개최</li>
+                            <li>외부 커뮤니티와의 협력 프로젝트 추진</li>
+                            <li>지식 공유 플랫폼의 기능 확장</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
